@@ -80,7 +80,7 @@ Set up your AWS credentials, this can be done by following the guide pinned in t
 Generate the key using the plugin:
 Ensure you point `settings.xml` to the settings.xml within this project.
 
-![Codeartifact Setup](https://i.imgur.com/Jj68cX1.png)
+![Codeartifact Setup](https://i.imgur.com/GHX2FYN.png)
 
 Next, point Maven at the correct place for your settings file.
 - Open Maven Settings (click shift twice & type in Maven Settings)
