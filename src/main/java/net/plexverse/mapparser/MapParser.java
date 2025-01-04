@@ -5,10 +5,11 @@ import net.plexverse.mapparser.command.MapSettingsCommand;
 import net.plexverse.mapparser.command.ParseCommand;
 import net.plexverse.mapparser.command.ToggleArmorStandCommand;
 import net.plexverse.mapparser.command.WorldBorderCommand;
+import net.plexverse.mapparser.enums.DataPointType;
+import net.plexverse.mapparser.enums.GameType;
 import net.plexverse.mapparser.listener.ArmorStandListener;
 import net.plexverse.mapparser.listener.ChatListener;
 import net.plexverse.mapparser.listener.SpawnListener;
-import net.plexverse.mapparser.menu.items.temp.KitCommand;
 import net.plexverse.mapparser.saving.SavingStrategy;
 import net.plexverse.mapparser.saving.zip.ZipSavingStrategy;
 import org.bukkit.plugin.PluginManager;
@@ -24,9 +25,16 @@ public class MapParser extends JavaPlugin {
     @Override
     public void onEnable() {
         System.out.println("Enabling...");
+
+        System.out.println("Registering datapoint types...");
+        DataPointType.loadDataPointTypes(this);
+
+        System.out.println("Registering game types...");
+        GameType.loadGameTypes(this);
+
         this.savingStrategy = new ZipSavingStrategy();
         this.pluginManager = this.getServer().getPluginManager();
-        mapParser = this;
+        MapParser.mapParser = this;
 
         System.out.println("Registering commands");
         this.initCommands();
@@ -37,7 +45,6 @@ public class MapParser extends JavaPlugin {
 
     private void initCommands() {
         this.getCommand("parse").setExecutor(new ParseCommand(this));
-        this.getCommand("kitparse").setExecutor(new KitCommand());
         this.getCommand("togglearmorstand").setExecutor(new ToggleArmorStandCommand(this));
         this.getCommand("mapsettings").setExecutor(new MapSettingsCommand(this));
         this.getCommand("setworldborder").setExecutor(new WorldBorderCommand());

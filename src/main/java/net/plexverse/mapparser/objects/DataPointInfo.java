@@ -1,7 +1,7 @@
 package net.plexverse.mapparser.objects;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 public class DataPointInfo {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().enableComplexMapKeySerialization().create();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT)  // Pretty printing
+            .enable(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);  // To handle empty lists like Gson's lenient handling
+
     private final Map<String, String> mapMeta;
     @Getter
     private final Map<String, List<WorldLocation>> dataPoints;
@@ -29,25 +32,28 @@ public class DataPointInfo {
         this.dataPoints = new HashMap<>();
     }
 
-    public void addMapMeta(String key, String value) {
+    public void addMapMeta(final String key, final String value) {
         this.mapMeta.put(key, value);
     }
 
-    public void addDataType(DataPointType dataPointType, Team team, double x, double y, double z, float yaw, float pitch) {
+    public void addDataType(final DataPointType dataPointType, final Team team, final double x, final double y, final double z, final float yaw, final float pitch) {
         this.dataPoints.computeIfAbsent(dataPointType.name() + (team != null ? "_" + team.getId() : ""), ($) -> new ArrayList<>()).add(new WorldLocation(x, y, z, yaw, pitch));
     }
 
-    public void export(Player player, File targetFile) {
+    public void export(final Player player, final File targetFile) {
         player.sendMessage(MiniMessage.miniMessage().deserialize("<dark_purple><b>(7/8)</b> <white>Saving info..."));
+
+        // Save mapMeta.json
         try (final Writer writer = new OutputStreamWriter(new FileOutputStream(new File(targetFile, "mapMeta.json")), StandardCharsets.UTF_8)) {
-            GSON.toJson(this.mapMeta, writer);
-        } catch (IOException e) {
+            DataPointInfo.OBJECT_MAPPER.writeValue(writer, this.mapMeta);
+        } catch (final IOException e) {
             throw new RuntimeException("Saving mapMeta.json", e);
         }
 
+        // Save dataPoints.json
         try (final Writer writer = new OutputStreamWriter(new FileOutputStream(new File(targetFile, "dataPoints.json")), StandardCharsets.UTF_8)) {
-            GSON.toJson(this.dataPoints, writer);
-        } catch (IOException e) {
+            DataPointInfo.OBJECT_MAPPER.writeValue(writer, this.dataPoints);
+        } catch (final IOException e) {
             throw new RuntimeException("Saving dataPoints.json", e);
         }
     }
@@ -62,7 +68,7 @@ public class DataPointInfo {
         private final float pitch;
 
         public Location getLocation(final World world) {
-            return new Location(world, x, y, z, yaw, pitch);
+            return new Location(world, this.x, this.y, this.z, this.yaw, this.pitch);
         }
     }
 }

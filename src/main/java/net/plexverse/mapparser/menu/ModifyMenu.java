@@ -99,16 +99,6 @@ public class ModifyMenu extends PagedMenu {
             itemList.add(getPitchItem());
         }
 
-        if (dataPointType == DataPointType.MINIBUILD) {
-            final String name = getDataContainer().get(Keys.MINIBUILD_NAME_KEY, PersistentDataType.STRING);
-            final String category = getDataContainer().get(Keys.MINIBUILD_CATEGORY_KEY, PersistentDataType.STRING);
-            itemList.addAll(getMinibuildItems(getBuildDifficulty(), name, category));
-        }
-
-        if (dataPointType == DataPointType.MOB) {
-            itemList.add(getMobItem(dataPointType));
-        }
-
         itemList.add(getCloneItem(dataPointType));
 
         return itemList;

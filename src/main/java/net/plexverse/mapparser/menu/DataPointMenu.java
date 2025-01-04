@@ -17,23 +17,22 @@ import xyz.xenondevs.invui.window.Window;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DataPointMenu extends PagedMenu {
 
-    public DataPointMenu(LivingEntity armorStandEntity) throws IOException {
-        super(itemList(armorStandEntity, MapSettingsManager.getMapSettings(armorStandEntity.getWorld()).get().getGameType()));
+    public DataPointMenu(final LivingEntity armorStandEntity) throws IOException {
+        super(DataPointMenu.itemList(armorStandEntity, MapSettingsManager.getMapSettings(armorStandEntity.getWorld()).get().getGameType()));
     }
 
     public static List<Item> itemList(final LivingEntity armorStandEntity, final GameType gameType) {
         final List<Item> items = new ArrayList<>();
-        Arrays.stream(DataPointType.values()).filter(dataPointType -> gameType.getDataPointTypeList().contains(dataPointType)).toList().forEach(dataPointType -> {
+        DataPointType.values().stream().filter(dataPointType -> gameType.getDataPointTypeList().contains(dataPointType)).toList().forEach(dataPointType -> {
             final ItemBuilder itemBuilder = new ItemBuilder(dataPointType.getMaterial());
             itemBuilder.setDisplayName("§d§l" + dataPointType.getMenuName());
             itemBuilder.addLoreLines("§7", "§7Click to set this datapoints as a §f" + dataPointType.getMenuName());
             final ClickableItem simpleItem = new ClickableItem(itemBuilder, (player) -> {
-                defineEntity(armorStandEntity, player, dataPointType, true);
+                DataPointMenu.defineEntity(armorStandEntity, player, dataPointType, true);
                 return null;
             });
             items.add(simpleItem);
@@ -41,7 +40,7 @@ public class DataPointMenu extends PagedMenu {
         return items;
     }
 
-    public static void defineEntity(final LivingEntity armorStandEntity, final Player player, DataPointType dataPointType, boolean showUI) {
+    public static void defineEntity(final LivingEntity armorStandEntity, final Player player, final DataPointType dataPointType, final boolean showUI) {
         armorStandEntity.setPersistent(true);
         armorStandEntity.getPersistentDataContainer().set(Keys.DATAPOINT_KEY, PersistentDataType.STRING, dataPointType.name());
         armorStandEntity.setCustomNameVisible(true);
