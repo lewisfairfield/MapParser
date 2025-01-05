@@ -53,9 +53,23 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDir("src/main/resources")
+        }
+    }
+}
+
 tasks.register<Jar>("shadowJar") {
     archiveBaseName.set("MapParser")
-    archiveVersion.set("1.0-SNAPSHOT")
+    archiveVersion.set("1.1-SNAPSHOT")
+    from(sourceSets.main.get().output)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named<Copy>("processResources") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.build {
